@@ -1,8 +1,9 @@
 let board = document.querySelector("#board")
-let board_size = 12
+let board_size = 6
 let boardArr = []
+let con = document.querySelector('#console')
 
-//TO DO: MAKE COLLISION WITH BODY AND WALL, ->CHANGE APPLE SPAWNS, SCORE, GAME OVER SCREEN
+//TO DO: -> MAKE COLLISION WITH BODY AND WALL, SCORE, END GAME
 
 board.style.gridTemplateColumns = `repeat(${board_size},1fr)`;
 board.style.gridTemplateRows = `repeat(${board_size},1fr)`;
@@ -53,17 +54,6 @@ class snakeBod {
 
 
 
-/*
-let test = snakeBod(dsfsdfsdf)
-  let testVis = boardArr[test.currYpos][test.currXpos]
-  testVis.style.backgroundColor = 'rgb(0,200,0)'
-  test.nextYpos = pos.y
-  test.nextXpos = pos.x
-  test.currYpos = test.nextYpos
-  test.currXpos = test.nextXpos
-*/
-
-
 
 let snakeHead = new snakeBod(0, 0, 0, 0, 0, 0)
 let snakeHeadVis = boardArr[snakeHead.currYpos][snakeHead.currXpos]
@@ -71,11 +61,11 @@ let snakeBody = [snakeHead]
 let snakeBodyVis = [snakeHeadVis]
 snakeHeadVis.style.backgroundColor = 'rgb(0,200,0)'
 snakeHeadVis.style.border = '3px solid black'
-
+snakeBodyVis[0].style.backgroundColor = "rgb(0,200,0)"
+    snakeBodyVis[0].style.border = '3px solid black'
 function drawSnake(xpos, ypos) {
   snakeBody[0].currXpos += xpos
   snakeBody[0].currYpos += ypos
-
   for (i = 0; i < snakeBody.length; i++) {
 
 
@@ -114,10 +104,11 @@ function linkSnake() {
 }
 
 function growSnake() {
-  let tail = snakeBody[snakeBody.length - 1]; //this si the problem
+  let tail = snakeBody[snakeBody.length - 1]; 
   newTail = new snakeBod(tail.lastXpos, tail.lastYpos)
   snakeBody.push(newTail)
   console.log(snakeBody)
+  con.innerHTML = snakeBody.length
 }
 
 function findAppleCord() {
@@ -125,19 +116,21 @@ function findAppleCord() {
   while (foundSpot == false) {
     yApplePos = Math.floor(Math.random() * board_size);
     xApplePos = Math.floor(Math.random() * board_size);
-
-    if (yApplePos != snakeBody[0].currYpos && xApplePos != snakeBody[0].currXpos) {//MAKE IT CHECK BODY NOT JUST HEAD
-      return [xApplePos, yApplePos]
-      foundSpot = true
-
+    let counter = 0 
+    for(i = 0;i<snakeBody.length;i++){
+      if(snakeBody[i].currXpos == xApplePos && snakeBody[i].currYpos == yApplePos){
+        findAppleCord()
+      }
     }
 
-  }
+      return [xApplePos, yApplePos]
+    
 
+  }
+  
 }
 
-/*
-*/
+
 
 function drawApple() {
 
@@ -215,6 +208,7 @@ let intervalRight
 let intervalLeft
 let intervalDown
 cords = findAppleCord()
+
 drawApple()
 drawSnake(pos.x, pos.y)
 
