@@ -1,9 +1,36 @@
 let board = document.querySelector("#board")
-let board_size = 6
+let board_size = 4 //0-3,4 dead zone 
 let boardArr = []
 let con = document.querySelector('#console')
+let deadZoneX = []
+let deadZoneY = []
 
-//TO DO: -> MAKE COLLISION WITH BODY AND WALL, SCORE, END GAME
+function calculateDeadZone(){
+  for(i = -1;i<board_size;i++){
+    deadZoneY.push(-1)
+    deadZoneX.push(i)
+  }
+  for(i = -1;i<board_size;i++){
+    deadZoneY.push(board_size)
+    deadZoneX.push(i)
+  }
+  for(i = -1;i<board_size;i++){
+    deadZoneY.push(i)
+    deadZoneX.push(-1)
+  }
+  for(i = -1;i<board_size;i++){
+    deadZoneY.push(i)
+    deadZoneX.push(board_size)
+  }
+
+}
+
+
+calculateDeadZone()
+
+
+//TO DO: , SCORE, -> END GAME
+//BUGS: 
 
 board.style.gridTemplateColumns = `repeat(${board_size},1fr)`;
 board.style.gridTemplateRows = `repeat(${board_size},1fr)`;
@@ -36,8 +63,8 @@ function clearBoard() {
 }
 
 let pos = {
-  y: 0,
-  x: 0
+  y: 2,
+  x: 2
 }
 
 class snakeBod {
@@ -62,10 +89,12 @@ let snakeBodyVis = [snakeHeadVis]
 snakeHeadVis.style.backgroundColor = 'rgb(0,200,0)'
 snakeHeadVis.style.border = '3px solid black'
 snakeBodyVis[0].style.backgroundColor = "rgb(0,200,0)"
-    snakeBodyVis[0].style.border = '3px solid black'
+snakeBodyVis[0].style.border = '3px solid black'
 function drawSnake(xpos, ypos) {
   snakeBody[0].currXpos += xpos
   snakeBody[0].currYpos += ypos
+  deadZoneCollision()
+  
   for (i = 0; i < snakeBody.length; i++) {
 
 
@@ -84,14 +113,39 @@ function drawSnake(xpos, ypos) {
       console.log('tail', snakeBody[i + 1], 'i', i + 1)
       snakeBodyVis[i + 1] = boardArr[snakeBody[i + 1].currYpos][snakeBody[i + 1].currXpos] //95 not defined
       snakeBodyVis[i + 1].style.backgroundColor = 'green'
-      
+  
     }
     
     snakeBody[i].lastXpos = snakeBody[i].currXpos;
     snakeBody[i].lastYpos = snakeBody[i].currYpos;
     
   }
+  bodyCollision()
+}
 
+function gameOver(){
+  con.innerHTML = 'uh oh'
+}
+
+
+function bodyCollision(){
+  for(i=1;i<snakeBody.length;i++){  //self collision bugged with 4 length snake
+    if(snakeHead.currXpos == snakeBody[i].currXpos && snakeHead.currYpos == snakeBody[i].currYpos){
+    gameOver()
+    }
+
+  }
+  
+
+}
+
+
+function deadZoneCollision(){
+  for(i=0;i<deadZoneX.length;i++){
+    if(snakeHead.currXpos == deadZoneX[i] && snakeHead.currYpos == deadZoneY[i]){
+      gameOver()
+    }
+  }
 }
 
 function linkSnake() {
@@ -108,7 +162,6 @@ function growSnake() {
   newTail = new snakeBod(tail.lastXpos, tail.lastYpos)
   snakeBody.push(newTail)
   console.log(snakeBody)
-  con.innerHTML = snakeBody.length
 }
 
 function findAppleCord() {
@@ -116,7 +169,7 @@ function findAppleCord() {
   while (foundSpot == false) {
     yApplePos = Math.floor(Math.random() * board_size);
     xApplePos = Math.floor(Math.random() * board_size);
-    let counter = 0 
+
     for(i = 0;i<snakeBody.length;i++){
       if(snakeBody[i].currXpos == xApplePos && snakeBody[i].currYpos == yApplePos){
         findAppleCord()
@@ -202,15 +255,16 @@ function moveLeft() {
   canMoveRight = false
 }
 
-const speed = 350
+const speed = 400
 let intervalUp
 let intervalRight
 let intervalLeft
 let intervalDown
 cords = findAppleCord()
 
+
+drawSnake(snakeHead.currXpos, snakeHead.currYpos)
 drawApple()
-drawSnake(pos.x, pos.y)
 
 document.addEventListener('keydown', function(event) {
 
