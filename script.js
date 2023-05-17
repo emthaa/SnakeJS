@@ -1,10 +1,11 @@
 let board = document.querySelector("#board")
-let board_size = 4 //0-3,4 dead zone 
+let content = document.querySelector('#content')
+let board_size = 4 
 let boardArr = []
 let con = document.querySelector('#console')
 let deadZoneX = []
 let deadZoneY = []
-
+const squares = board_size * board_size
 function calculateDeadZone(){
   for(i = -1;i<board_size;i++){
     deadZoneY.push(-1)
@@ -29,7 +30,7 @@ function calculateDeadZone(){
 calculateDeadZone()
 
 
-//TO DO: , SCORE, -> END GAME
+//TO DO: , SCORE, -> GAME OVER , GAME WIN 
 //BUGS: 
 
 board.style.gridTemplateColumns = `repeat(${board_size},1fr)`;
@@ -62,10 +63,6 @@ function clearBoard() {
   }
 }
 
-let pos = {
-  y: 2,
-  x: 2
-}
 
 class snakeBod {
   constructor(currXpos, currYpos, nextXpos, nextYpos, lastXpos, lastYpos) {
@@ -80,8 +77,6 @@ class snakeBod {
 
 
 
-
-
 let snakeHead = new snakeBod(0, 0, 0, 0, 0, 0)
 let snakeHeadVis = boardArr[snakeHead.currYpos][snakeHead.currXpos]
 let snakeBody = [snakeHead]
@@ -90,10 +85,11 @@ snakeHeadVis.style.backgroundColor = 'rgb(0,200,0)'
 snakeHeadVis.style.border = '3px solid black'
 snakeBodyVis[0].style.backgroundColor = "rgb(0,200,0)"
 snakeBodyVis[0].style.border = '3px solid black'
+
 function drawSnake(xpos, ypos) {
   snakeBody[0].currXpos += xpos
   snakeBody[0].currYpos += ypos
-  deadZoneCollision()
+  deadZoneCheckCollision()
   
   for (i = 0; i < snakeBody.length; i++) {
 
@@ -111,7 +107,7 @@ function drawSnake(xpos, ypos) {
       snakeBody[i + 1].currXpos = snakeBody[i].lastXpos;
       snakeBody[i + 1].currYpos = snakeBody[i].lastYpos;
       console.log('tail', snakeBody[i + 1], 'i', i + 1)
-      snakeBodyVis[i + 1] = boardArr[snakeBody[i + 1].currYpos][snakeBody[i + 1].currXpos] //95 not defined
+      snakeBodyVis[i + 1] = boardArr[snakeBody[i + 1].currYpos][snakeBody[i + 1].currXpos] 
       snakeBodyVis[i + 1].style.backgroundColor = 'green'
   
     }
@@ -120,16 +116,23 @@ function drawSnake(xpos, ypos) {
     snakeBody[i].lastYpos = snakeBody[i].currYpos;
     
   }
-  bodyCollision()
+  checkBodyCollision()
 }
 
 function gameOver(){
-  con.innerHTML = 'uh oh'
+  const GameOverScreen = document.createElement('div')
+  GameOverScreen.id = 'GameOverScreen'
+  content.appendChild(GameOverScreen)
+
+  const GameOverText = document.createElement('div')
+  GameOverText.id = 'GameOverText'
+  GameOverScreen.appendChild(GameOverText)
+  GameOverText.innerHTML = 'Game Over Idiot'
 }
 
 
-function bodyCollision(){
-  for(i=1;i<snakeBody.length;i++){  //self collision bugged with 4 length snake
+function checkBodyCollision(){
+  for(i=1;i<snakeBody.length;i++){  
     if(snakeHead.currXpos == snakeBody[i].currXpos && snakeHead.currYpos == snakeBody[i].currYpos){
     gameOver()
     }
@@ -140,7 +143,7 @@ function bodyCollision(){
 }
 
 
-function deadZoneCollision(){
+function deadZoneCheckCollision(){
   for(i=0;i<deadZoneX.length;i++){
     if(snakeHead.currXpos == deadZoneX[i] && snakeHead.currYpos == deadZoneY[i]){
       gameOver()
@@ -186,16 +189,16 @@ function findAppleCord() {
 
 
 function drawApple() {
-
+  if(snakeBody.length != squares){
   apple = boardArr[cords[1]][cords[0]]
   apple.style.backgroundColor = 'red'
   apple.style.border = '3px solid black'
 
   if (snakeBody[0].currYpos == cords[1] && snakeBody[0].currXpos == cords[0]) {
     growSnake()
-    cords = findAppleCord()   //MAKE SNAKE GROW HERE <-----
+    cords = findAppleCord()   
     drawApple()
-
+  }
   }
 }
 
@@ -211,7 +214,7 @@ function moveUp() {
   snakeBody[0].lastYpos = snakeBody[0].currYpos
   drawSnake(0, -1)
 
-  canMoveUp = false //already moving up
+  canMoveUp = false 
   canMoveDown = false
   canMoveLeft = true
   canMoveRight = true
@@ -296,7 +299,6 @@ document.addEventListener('keydown', function(event) {
     intervalDown = setInterval(moveDown, speed)
   }
 });
-
 
 
 
