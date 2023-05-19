@@ -4,10 +4,13 @@ html,body{
   
 }
 
+*{
+  font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
 
 .square{
 
-    background-color: white;
+    background-color: black;
 
     -webkit-user-select: none;
     -moz-user-select: none;
@@ -19,7 +22,7 @@ html,body{
 #board{
     width: 700px;                             
     height: 700px;
-    background-color: rgb(255, 255, 255);
+    background-color: rgb(0, 0, 0);
     display: grid;
     grid-template-rows: repeat(1,1fr);
     grid-template-columns: repeat(1,1fr);
@@ -46,6 +49,24 @@ html,body{
 }
 
 #GameOverText{
-  color: white;
-
+  color:white;
+  font-size: 48px;
+  padding-left: 25%;
 }
+#GameOverScore{
+  color:white;
+  font-size: 32px;
+  padding-left: 33%;
+}
+#gameOverButton{
+  height: 75px;
+  width: 100px;
+  border: 2px solid rgb(52, 52, 52);
+  opacity: none;
+  margin-left: 37.5%;
+  margin-top: 25px;
+  font-weight: bold;
+  font-size: 20px;
+}
+
+
